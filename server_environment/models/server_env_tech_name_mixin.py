@@ -2,7 +2,7 @@
 # @author Simone Orsi <simahawk@gmail.com>
 # License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl.html)
 
-from odoo import api, fields, models
+from odoo import _, api, fields, models
 
 
 class ServerEnvTechNameMixin(models.AbstractModel):
@@ -26,12 +26,12 @@ class ServerEnvTechNameMixin(models.AbstractModel):
 
     _name = "server.env.techname.mixin"
     _description = "Server environment technical name"
-    _sql_constraints = [
-        (
-            "tech_name_uniq",
-            "unique(tech_name)",
-            "`tech_name` must be unique!",
-        )
+    _constraints = [
+        models.Constraint(
+            name="tech_name_uniq",
+            sql="unique(tech_name)",
+            message=_("`tech_name` must be unique!"),
+        ),
     ]
     # TODO: could leverage the new option for computable / writable fields
     # and get rid of some onchange / read / write code.
