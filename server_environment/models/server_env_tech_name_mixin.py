@@ -2,7 +2,7 @@
 # @author Simone Orsi <simahawk@gmail.com>
 # License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl.html)
 
-from odoo import _, api, fields, models
+from odoo import api, fields, models
 
 
 class ServerEnvTechNameMixin(models.AbstractModel):
@@ -14,25 +14,23 @@ class ServerEnvTechNameMixin(models.AbstractModel):
     This mixin helps solve the problem by providing a tech name field
     and a cleanup machinery as well as a unique constrain.
 
-    To use this mixin add it to the _inherit attr of your module like:
+    To use this mixin add it to the _inherit attr of your model like:
+    (instead of `server.env.mixin`)
 
         _inherit = [
             "my.model",
             "server.env.techname.mixin",
-            "server.env.mixin",
         ]
 
     """
 
     _name = "server.env.techname.mixin"
+    _inherit = "server.env.mixin"
     _description = "Server environment technical name"
-
     _tech_name_uniq = models.Constraint(
-            'UNIQUE (tech_name)',
-            'tech_name` must be unique!',
+        "unique(tech_name)",
+        "`tech_name` must be unique!",
     )
-
-
     # TODO: could leverage the new option for computable / writable fields
     # and get rid of some onchange / read / write code.
     tech_name = fields.Char(

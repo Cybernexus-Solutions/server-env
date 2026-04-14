@@ -70,8 +70,7 @@ if _dir:
 
     if not os.path.exists(ck_path):
         raise Exception(
-            "Provided server environment does not exist, "
-            f"please add a folder {ck_path}"
+            f"Provided server environment does not exist, please add a folder {ck_path}"
         )
 
 
@@ -122,7 +121,7 @@ def _load_config_from_server_env_files(config_p):
 
 
 def _load_config_from_rcfile(config_p):
-    config_p.read(system_base_config.rcfile)
+    config_p.read(system_base_config["config"])
     config_p.remove_section("options")
 
 
@@ -174,16 +173,14 @@ class ServerConfiguration(models.TransientModel):
     config = Serialized()
 
     @classmethod
-    def _build_model(cls, pool, cr):
+    def _build_model(cls):
         """Add columns to model dynamically
         and init some properties
 
         """
-        ModelClass = super()._build_model(pool, cr)
-        ModelClass._add_columns()
-        ModelClass._arch = None
-        ModelClass._build_osv()
-        return ModelClass
+        cls._add_columns()
+        cls._arch = None
+        cls._build_osv()
 
     @classmethod
     def _format_key(cls, section, key):
@@ -268,10 +265,10 @@ class ServerConfiguration(models.TransientModel):
     @classmethod
     def _build_osv(cls):
         """Build the view for the current configuration."""
-        arch = '<form string="Configuration Form">' '<notebook colspan="4">'
+        arch = '<form string="Configuration Form"><notebook colspan="4">'
 
         # Odoo server configuration
-        rcfile = system_base_config.rcfile
+        rcfile = system_base_config["config"]
         items = cls._get_base_cols()
         arch += '<page string="Odoo">'
         arch += f'<separator string="{_escape(rcfile)}" colspan="4"/>'
@@ -308,11 +305,11 @@ class ServerConfiguration(models.TransientModel):
     @api.model
     def _is_secret(self, key):
         """
-        This method is intended to be inherited to defined which keywords
-        should be secret.
-        :return: list of secret keywords
+        This method is intended to be inherited to define which values
+        should be kept secret.
+        :return: True if information has to be protected, False otherwise
         """
-        secret_keys = ["passw", "key", "secret", "token"]
+        secret_keys = ["_pass", "passw", "key", "secret", "token"]
         return any(secret_key in key for secret_key in secret_keys)
 
     @api.model
